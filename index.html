@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BasisPath — Basis Path Testing Lab</title>
+<meta name="description" content="Interactive Control Flow Graph, McCabe Cyclomatic Complexity and Basis Path Testing case study.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand"><div class="brand-logo"><i></i><i></i><i></i></div><div><b>BasisPath</b><span>Testing Lab</span></div></div>
+  <div class="side-label">WORKSPACE</div>
+  <nav><a class="active" href="#dashboard">⌂ <span>Dashboard</span></a><a href="#graph">◇ <span>Control Flow Graph</span></a><a href="#paths">↝ <span>Independent Paths</span></a><a href="#tests">✓ <span>Test Runner</span></a></nav>
+  <div class="side-bottom"><div class="engine"><span class="status-dot"></span><div><b>Analysis engine</b><small>Ready · client-side</small></div></div><button id="theme" class="side-btn">◐ <span>Dark mode</span></button></div>
+</aside>
+<main>
+<header class="topbar"><div class="mobile-brand">BasisPath</div><div class="crumb">SOFTWARE ENGINEERING <span>/</span> BASIS PATH TESTING</div><div class="top-actions"><button id="reset" class="icon-btn" title="Reset">↻</button><button id="export" class="outline">Export report</button></div></header>
+
+<section id="dashboard" class="hero wrap">
+ <div><div class="eyebrow">INTERACTIVE CASE STUDY</div><h1>See how your program <em>really flows.</em></h1><p>Explore a working example, calculate McCabe's Cyclomatic Complexity, discover independent execution paths and run the minimum basis-path test set.</p></div>
+ <div class="hero-status"><span class="status-dot"></span><div><b>Live analysis</b><small>Everything runs in your browser</small></div></div>
+</section>
+
+<section class="wrap controls">
+ <div class="case-select"><label>CASE STUDY</label><select id="scenario"><option value="atm">ATM Withdrawal</option><option value="login">Login + Retry</option><option value="result">Student Result</option></select></div>
+ <div class="control-copy"><b id="caseTitle">ATM Withdrawal</b><span id="caseDesc">A realistic flow with nested decisions and a retry loop.</span></div>
+ <button id="analyze" class="primary">Analyze case <span>→</span></button>
+</section>
+
+<section class="wrap metrics">
+ <article class="metric main-metric"><div class="metric-icon">V</div><span>McCabe complexity</span><strong id="complexity">4</strong><small id="complexityHint">Moderate test effort</small></article>
+ <article class="metric"><div class="metric-icon">N</div><span>Nodes</span><strong id="nodes">9</strong><small>Program points</small></article>
+ <article class="metric"><div class="metric-icon">E</div><span>Edges</span><strong id="edges">11</strong><small>Possible transitions</small></article>
+ <article class="metric"><div class="metric-icon">◇</div><span>Decisions</span><strong id="decisions">3</strong><small>Branch points</small></article>
+ <article class="metric"><div class="metric-icon">↝</div><span>Basis paths</span><strong id="basis">4</strong><small>Minimum tests</small></article>
+</section>
+
+<section class="wrap two-col">
+ <div class="panel code-panel"><div class="panel-head"><div><div class="eyebrow">01 · LOGIC</div><h2>Representative program</h2><p>Read the case like normal code. The graph on the right is generated from the same flow model.</p></div><span class="live-pill">● LIVE</span></div>
+  <div class="codebox"><div class="gutter" id="gutter"></div><pre id="code"></pre></div>
+  <div class="code-foot"><span>Tip: decisions create branches; loops create a path back to an earlier node.</span><button id="showFormula" class="link-btn">How is V(G) calculated?</button></div>
+ </div>
+ <div id="graph" class="panel graph-panel"><div class="panel-head"><div><div class="eyebrow">02 · VISUALIZE</div><h2>Control Flow Graph</h2><p>Click a path below to highlight its route.</p></div><div class="legend"><span><i class="process"></i>Step</span><span><i class="decision"></i>Decision</span><span><i class="loop"></i>Loop</span></div></div>
+  <div class="graph-wrap"><svg id="graphSvg" viewBox="0 0 900 500" role="img" aria-label="Control flow graph"></svg><div class="formula"><b>V(G) = E − N + 2</b><span id="formula">11 − 9 + 2 = 4</span></div></div>
+ </div>
+</section>
+
+<section id="paths" class="wrap two-col lower">
+ <div class="panel"><div class="panel-head"><div><div class="eyebrow">03 · COVERAGE</div><h2>Independent paths</h2><p>Each row adds a route that introduces new flow.</p></div><span id="pathCount" class="count-pill">4 paths</span></div><div id="pathsList" class="paths-list"></div></div>
+ <div id="tests" class="panel runner"><div class="panel-head"><div><div class="eyebrow">04 · VALIDATION</div><h2>Basis-path test runner</h2><p>Run the selected test and watch the execution trace.</p></div><span id="runnerStatus" class="ready-pill">● READY</span></div>
+   <div class="test-picker"><label>TEST CASE</label><select id="testSelect"></select><button id="runTest" class="primary small">▶ Run test</button></div>
+   <div id="runResult" class="run-result"><div class="empty-state"><span>▶</span><b>Select a test and run it</b><small>The execution trace will appear here.</small></div></div>
+ </div>
+</section>
+
+<section class="wrap learning">
+ <div class="learn-card"><span>01</span><div><b>Build the map</b><p>Turn statements into nodes and possible transitions into arrows.</p></div></div>
+ <div class="learn-card"><span>02</span><div><b>Measure complexity</b><p>For one connected graph, <strong>V(G) = E − N + 2</strong>.</p></div></div>
+ <div class="learn-card"><span>03</span><div><b>Test the routes</b><p>Use one test for each independent path in the minimum basis set.</p></div></div>
+</section>
+<footer class="wrap"><span>BasisPath · Academic project prototype</span><span>CFG · McCabe Complexity · Basis Path Testing</span></footer>
+</main></div>
+<div id="toast" class="toast"></div>
+<div id="modal" class="modal"><div class="modal-card"><button id="closeModal">×</button><div class="eyebrow">THE FORMULA</div><h2>McCabe's Cyclomatic Complexity</h2><p>For a single connected control-flow graph:</p><div class="big-formula">V(G) = E − N + 2</div><p><b>E</b> = edges, <b>N</b> = nodes. Another shortcut for a simple program is <b>number of decision points + 1</b>.</p><button id="closeModal2" class="primary">Got it</button></div></div>
+<script src="app.js"></script>
+</body></html>
