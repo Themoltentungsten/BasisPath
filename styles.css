@@ -297,3 +297,138 @@ select{color-scheme:light}.dark select{color-scheme:dark}
 .brand-logo,.mobile-brand-logo{box-shadow:0 4px 12px rgba(0,0,0,.08)}
 .dark .brand-logo,.dark .mobile-brand-logo{background:#141c20;border-color:#3a474e;box-shadow:0 5px 16px rgba(0,0,0,.25)}
 .dark .mobile-brand{color:#edf2f4}
+
+
+/* =========================================================
+   PREMIUM GLASS NAVIGATION — DESKTOP + MOBILE
+   ========================================================= */
+:root{
+  --glass-bg:rgba(255,255,255,.66);
+  --glass-border:rgba(255,255,255,.72);
+  --glass-shadow:0 18px 55px rgba(22,31,36,.13), inset 0 1px 0 rgba(255,255,255,.55);
+}
+.dark{
+  --glass-bg:rgba(18,26,30,.70);
+  --glass-border:rgba(255,255,255,.10);
+  --glass-shadow:0 22px 65px rgba(0,0,0,.40), inset 0 1px 0 rgba(255,255,255,.07);
+}
+
+/* Desktop: floating glass sidebar. */
+@media (min-width:1101px){
+  .sidebar{
+    top:14px;bottom:14px;left:14px;inset-right:auto;
+    width:220px;
+    padding:22px 12px;
+    border:1px solid var(--glass-border);
+    border-radius:24px;
+    background:var(--glass-bg);
+    color:var(--text);
+    backdrop-filter:blur(24px) saturate(150%);
+    -webkit-backdrop-filter:blur(24px) saturate(150%);
+    box-shadow:var(--glass-shadow);
+    overflow:hidden;
+  }
+  .sidebar::before{
+    content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+    background:linear-gradient(145deg,rgba(255,255,255,.14),transparent 36%,rgba(255,255,255,.03));
+  }
+  .brand,.side-label,.sidebar nav,.side-bottom{position:relative;z-index:1}
+  .brand{padding:0 10px 28px}
+  .brand b{color:var(--text)}
+  .brand span{color:var(--muted)}
+  .brand-logo{background:rgba(255,255,255,.35);border-color:var(--line)}
+  .side-label{color:var(--muted)}
+  .sidebar nav{gap:6px}
+  .sidebar nav a{color:var(--muted);min-height:46px;padding:12px 13px;border:1px solid transparent;transition:.2s ease}
+  .sidebar nav a:hover{background:rgba(255,255,255,.20);color:var(--text);border-color:rgba(255,255,255,.22);transform:translateX(2px)}
+  .sidebar nav a.active{background:rgba(255,255,255,.30);color:var(--text);border-color:rgba(255,255,255,.30);box-shadow:inset 3px 0 var(--accent),0 7px 20px rgba(20,30,35,.07)}
+  .dark .sidebar nav a:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.09)}
+  .dark .sidebar nav a.active{background:rgba(255,255,255,.085);color:#fff;border-color:rgba(255,255,255,.10);box-shadow:inset 3px 0 var(--accent),0 8px 25px rgba(0,0,0,.15)}
+  .engine{background:rgba(255,255,255,.20);border-color:rgba(255,255,255,.25);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+  .dark .engine{background:rgba(255,255,255,.045);border-color:rgba(255,255,255,.09)}
+  .side-btn{color:var(--muted)}
+  main{margin-left:248px;width:calc(100% - 248px)}
+}
+
+/* Tablet: compact glass rail. */
+@media (min-width:769px) and (max-width:1100px){
+  .sidebar{
+    top:12px;bottom:12px;left:12px;width:70px;padding:20px 8px;
+    border:1px solid var(--glass-border);border-radius:20px;
+    background:var(--glass-bg);backdrop-filter:blur(22px) saturate(145%);-webkit-backdrop-filter:blur(22px) saturate(145%);
+    box-shadow:var(--glass-shadow);
+  }
+  .sidebar nav a{color:var(--muted);border:1px solid transparent;transition:.2s ease}
+  .sidebar nav a.active{background:rgba(255,255,255,.22);color:var(--text);border-color:rgba(255,255,255,.16);box-shadow:inset 2px 0 var(--accent)}
+  .dark .sidebar nav a.active{background:rgba(255,255,255,.07);color:#fff}
+  .engine{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.20)}
+  .dark .engine{background:rgba(255,255,255,.045);border-color:rgba(255,255,255,.08)}
+}
+
+/* Phones: iPhone-style floating glass navigation. */
+@media (max-width:768px){
+  body{padding-bottom:104px}
+  .sidebar{
+    position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));top:auto;
+    width:auto;height:76px;padding:8px 9px;
+    border:1px solid rgba(255,255,255,.22);
+    border-radius:25px;
+    background:rgba(28,34,38,.72);
+    color:#fff;
+    backdrop-filter:blur(25px) saturate(165%);
+    -webkit-backdrop-filter:blur(25px) saturate(165%);
+    box-shadow:0 20px 55px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.16),inset 0 -1px 0 rgba(0,0,0,.22);
+    overflow:hidden;
+  }
+  .sidebar::before{
+    content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+    background:linear-gradient(110deg,rgba(255,255,255,.12),transparent 42%,rgba(255,255,255,.035));
+  }
+  .sidebar nav{position:relative;z-index:1;height:100%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;align-items:stretch}
+  .sidebar nav a{
+    min-width:0;height:58px;padding:6px 3px;border:1px solid transparent;border-radius:19px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+    color:rgba(255,255,255,.72);font-size:20px;line-height:1;transition:.18s ease;
+    overflow:hidden;
+  }
+  .sidebar nav a span{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;font-size:8px;line-height:1.1;white-space:nowrap;font-weight:700;color:inherit}
+  .sidebar nav a.active{
+    background:rgba(255,255,255,.17);color:#fff;border-color:rgba(255,255,255,.26);
+    box-shadow:0 5px 18px rgba(0,0,0,.16),inset 0 1px 0 rgba(255,255,255,.18);
+    transform:translateY(-1px);
+  }
+  .sidebar nav a:hover{background:rgba(255,255,255,.10);color:#fff}
+  .sidebar nav a.active::after{content:"";position:absolute;bottom:7px;width:18px;height:3px;border-radius:5px;background:var(--accent);box-shadow:0 0 10px rgba(255,90,54,.55)}
+  .dark .sidebar{background:rgba(22,29,33,.72);border-color:rgba(255,255,255,.11)}
+  /* Light mode uses a frosted white iPhone-like surface. */
+  body:not(.dark) .sidebar{background:rgba(246,249,250,.78);border-color:rgba(255,255,255,.92);box-shadow:0 18px 50px rgba(22,31,36,.18),inset 0 1px 0 rgba(255,255,255,.92)}
+  body:not(.dark) .sidebar nav a{color:#68757d}
+  body:not(.dark) .sidebar nav a.active{background:rgba(255,255,255,.72);color:#172126;border-color:rgba(255,255,255,.95);box-shadow:0 5px 18px rgba(30,40,45,.10),inset 0 1px 0 #fff}
+  body:not(.dark) .sidebar nav a:hover{background:rgba(255,255,255,.55);color:#172126}
+  /* Short mobile labels prevent Independent Paths / Test Runner from colliding. */
+  .sidebar nav a span{font-size:0}
+  .sidebar nav a span::after{content:attr(data-mobile);font-size:8px}
+  .sidebar nav a span{color:inherit}
+  .sidebar nav a:nth-child(3) span::after{content:"Paths"}
+  .sidebar nav a:nth-child(4) span::after{content:"Runner"}
+  main{margin:0;width:100%;min-width:0}
+  #dashboard,#graph,#paths,#tests{scroll-margin-top:70px;scroll-margin-bottom:105px}
+}
+
+@media (max-width:390px){
+  .sidebar{left:8px;right:8px;height:72px;border-radius:23px;padding:7px 8px}
+  .sidebar nav{gap:3px}
+  .sidebar nav a{height:56px;border-radius:17px;font-size:18px}
+  .sidebar nav a span::after{font-size:7.5px}
+  body{padding-bottom:99px}
+}
+
+@media (max-width:768px) and (orientation:landscape){
+  .sidebar{height:68px;bottom:calc(8px + env(safe-area-inset-bottom));border-radius:22px}
+  .sidebar nav a{height:52px}
+  body{padding-bottom:92px}
+}
+
+@supports (padding: max(0px)){
+  @media(max-width:768px){.sidebar{bottom:max(10px,calc(10px + env(safe-area-inset-bottom)))}}
+}
