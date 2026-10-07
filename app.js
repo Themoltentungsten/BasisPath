@@ -36,6 +36,23 @@ function runTest(){const s=scenarios[current],p=s.paths[+$('#testSelect').value]
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1900)}
 $('#scenario').onchange=()=>{current=$('#scenario').value;selectedPath=0;render()};$('#analyze').onclick=()=>{render();toast('Analysis recalculated')};$('#testSelect').onchange=()=>{selectedPath=+$('#testSelect').value;highlightPath(scenarios[current],scenarios[current].paths[selectedPath]);renderPaths(scenarios[current])};$('#runTest').onclick=runTest;$('#reset').onclick=()=>{current='atm';$('#scenario').value='atm';selectedPath=0;render();toast('Workspace reset')};
 $('#export').onclick=()=>{const s=scenarios[current],V=complexity(s);const report=`BASISPATH ANALYSIS REPORT\n==========================\nCase: ${s.title}\n\nNodes: ${s.nodes.length}\nEdges: ${s.edges.length}\nDecision points: ${V-1}\nCyclomatic complexity: ${V}\nFormula: E - N + 2 = ${s.edges.length} - ${s.nodes.length} + 2 = ${V}\nMinimum basis paths: ${s.paths.length}\n\nINDEPENDENT PATHS\n${s.paths.map(p=>`${p.id}: ${p.name}\nRoute: ${p.route.join(' -> ')}\nInput: ${p.input}\nExpected: ${p.expected}`).join('\n\n')}`;const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([report],{type:'text/plain'}));a.download='basispath-report.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500);toast('Report exported')};
-$('#theme').onclick=()=>{document.body.classList.toggle('dark');localStorage.setItem('bp-dark',document.body.classList.contains('dark'))};if(localStorage.getItem('bp-dark')==='true')document.body.classList.add('dark');
+function syncThemeLabel(){const dark=document.body.classList.contains('dark');const label=$('#themeLabel');if(label)label.textContent=dark?'Light mode':'Dark mode';$('#theme')?.setAttribute('aria-label',dark?'Switch to light mode':'Switch to dark mode')}
+$('#theme').onclick=()=>{document.body.classList.toggle('dark');localStorage.setItem('bp-dark',document.body.classList.contains('dark'));syncThemeLabel()};if(localStorage.getItem('bp-dark')==='true')document.body.classList.add('dark');syncThemeLabel();
 $('#showFormula').onclick=()=>$('#modal').classList.add('show');$('#closeModal').onclick=$('#closeModal2').onclick=()=>$('#modal').classList.remove('show');$('#modal').onclick=e=>{if(e.target.id==='modal')e.currentTarget.classList.remove('show')};
 render();
+
+// ===== Navigation scroll spy =====
+(function setupSectionNavigation(){
+  const links=[...document.querySelectorAll('.sidebar nav a[href^="#"]')];
+  const sections=links.map(link=>document.querySelector(link.getAttribute('href'))).filter(Boolean);
+  if(!links.length || !sections.length) return;
+  const setActive=(id)=>{
+    links.forEach(link=>link.classList.toggle('active',link.getAttribute('href')===`#${id}`));
+  };
+  const observer=new IntersectionObserver(entries=>{
+    const visible=entries.filter(e=>e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];
+    if(visible) setActive(visible.target.id);
+  },{rootMargin:'-95px 0px -55% 0px',threshold:[0,.15,.35,.6]});
+  sections.forEach(section=>observer.observe(section));
+  links.forEach(link=>link.addEventListener('click',()=>setActive(link.getAttribute('href').slice(1))));
+})();
