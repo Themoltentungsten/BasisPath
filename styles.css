@@ -432,3 +432,66 @@ select{color-scheme:light}.dark select{color-scheme:dark}
 @supports (padding: max(0px)){
   @media(max-width:768px){.sidebar{bottom:max(10px,calc(10px + env(safe-area-inset-bottom)))}}
 }
+
+
+/* ===== Liquid-glass navigation refresh ===== */
+.nav-icon{width:19px;height:19px;flex:0 0 19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
+.sidebar nav a{position:relative;isolation:isolate;overflow:hidden;transition:color .2s ease,transform .2s ease,background .2s ease,border-color .2s ease;}
+.sidebar nav a::before{content:"";position:absolute;inset:2px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.06);opacity:0;transform:scale(.96);transition:.2s ease;z-index:-1;}
+.sidebar nav a::after{content:"";position:absolute;inset:1px;border-radius:15px;background:linear-gradient(135deg,rgba(255,255,255,.18),rgba(255,255,255,.045) 45%,rgba(255,255,255,.09));box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(255,255,255,.04),0 8px 22px rgba(0,0,0,.10);backdrop-filter:blur(16px) saturate(145%);-webkit-backdrop-filter:blur(16px) saturate(145%);opacity:0;transform:translateY(2px) scale(.98);transition:.22s ease;z-index:-2;}
+.sidebar nav a:hover{background:transparent!important;box-shadow:none!important;transform:translateX(1px)}
+.sidebar nav a:hover::before{opacity:1;transform:none}
+.sidebar nav a.active{background:transparent!important;color:var(--text)!important;border:1px solid rgba(255,255,255,.18);box-shadow:none!important;transform:none}
+.sidebar nav a.active::before{opacity:1;transform:none;background:rgba(255,255,255,.07)}
+.sidebar nav a.active::after{opacity:1;transform:none}
+.sidebar nav a.active .nav-icon{filter:drop-shadow(0 1px 4px rgba(255,255,255,.18))}
+.dark .sidebar nav a.active{color:#f4f7f8!important;border-color:rgba(255,255,255,.12);box-shadow:none!important}
+.dark .sidebar nav a.active::before{background:rgba(255,255,255,.055);border-color:rgba(255,255,255,.07)}
+.dark .sidebar nav a.active::after{background:linear-gradient(135deg,rgba(255,255,255,.13),rgba(255,255,255,.035) 48%,rgba(255,255,255,.07));box-shadow:inset 0 1px 0 rgba(255,255,255,.16),inset 0 -1px 0 rgba(255,255,255,.025),0 10px 28px rgba(0,0,0,.25)}
+body:not(.dark) .sidebar nav a.active{color:#182126!important;border-color:rgba(255,255,255,.72)}
+body:not(.dark) .sidebar nav a.active::before{background:rgba(255,255,255,.34);border-color:rgba(255,255,255,.55)}
+body:not(.dark) .sidebar nav a.active::after{background:linear-gradient(135deg,rgba(255,255,255,.72),rgba(255,255,255,.30) 50%,rgba(255,255,255,.52));box-shadow:inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.35),0 10px 28px rgba(30,40,45,.10)}
+/* Make the navigation icons themselves glass-friendly and never orange. */
+.sidebar nav a.active .nav-icon,.sidebar nav a:hover .nav-icon{color:currentColor;stroke:currentColor}
+
+/* Liquid glass custom dropdowns: trigger + menu + option bubble. */
+.custom-select{position:relative;min-width:205px;z-index:20}
+.custom-select-trigger{position:relative;overflow:hidden;border-radius:14px!important;background:rgba(255,255,255,.055)!important;border:1px solid rgba(255,255,255,.16)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.18),inset 0 -1px 0 rgba(255,255,255,.04),0 8px 25px rgba(0,0,0,.08);backdrop-filter:blur(16px) saturate(145%);-webkit-backdrop-filter:blur(16px) saturate(145%);}
+.custom-select-trigger::before{content:"";position:absolute;left:10%;right:25%;top:1px;height:45%;border-radius:999px;background:linear-gradient(90deg,rgba(255,255,255,.18),rgba(255,255,255,0));filter:blur(8px);pointer-events:none}
+.custom-select-menu{top:calc(100% + 8px)!important;padding:7px!important;border-radius:18px!important;background:rgba(245,248,250,.58)!important;border:1px solid rgba(255,255,255,.68)!important;box-shadow:0 22px 55px rgba(24,34,40,.18),inset 0 1px 0 rgba(255,255,255,.92)!important;backdrop-filter:blur(24px) saturate(155%);-webkit-backdrop-filter:blur(24px) saturate(155%);overflow:hidden}
+.custom-select-option{position:relative;overflow:hidden;border-radius:12px!important;padding:10px 12px!important;background:transparent!important;color:#253139!important;box-shadow:none!important;transition:.16s ease}
+.custom-select-option::before{content:"";position:absolute;inset:0;border-radius:12px;background:rgba(255,255,255,.38);border:1px solid rgba(255,255,255,.52);opacity:0;transition:.16s ease;z-index:-1}
+.custom-select-option:hover::before,.custom-select-option.selected::before{opacity:1}
+.custom-select-option.selected{font-weight:700!important;color:#182126!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.72),0 4px 14px rgba(30,40,45,.06)!important}
+.custom-select-option.selected::after{content:"";position:absolute;right:10px;top:50%;width:6px;height:6px;border-radius:50%;background:rgba(24,33,38,.55);transform:translateY(-50%)}
+.dark .custom-select-trigger{background:rgba(255,255,255,.055)!important;border-color:rgba(255,255,255,.13)!important;color:#eef3f5!important}
+.dark .custom-select-menu{background:rgba(20,28,32,.70)!important;border-color:rgba(255,255,255,.12)!important;box-shadow:0 24px 60px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.12)!important}
+.dark .custom-select-option{color:#eaf0f2!important}
+.dark .custom-select-option::before{background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.13)}
+.dark .custom-select-option.selected{color:#fff!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 5px 18px rgba(0,0,0,.18)!important}
+.dark .custom-select-option.selected::after{background:rgba(255,255,255,.72)}
+
+/* Remove orange selection rails from path rows too: use a liquid selection bubble. */
+.path-row.selected,.dark .path-row.selected{position:relative;background:transparent;box-shadow:none!important}
+.path-row.selected::before{content:"";position:absolute;inset:2px;border-radius:13px;background:linear-gradient(135deg,rgba(255,255,255,.30),rgba(255,255,255,.08));border:1px solid rgba(255,255,255,.30);box-shadow:inset 0 1px 0 rgba(255,255,255,.42),0 6px 20px rgba(20,30,35,.07);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:-1}
+.dark .path-row.selected::before{background:linear-gradient(135deg,rgba(255,255,255,.09),rgba(255,255,255,.025));border-color:rgba(255,255,255,.10);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 8px 24px rgba(0,0,0,.18)}
+.path-row.selected .path-num{color:var(--accent)}
+
+/* Mobile: full liquid-glass iPhone-style floating navigation. */
+@media(max-width:768px){
+  .sidebar{left:10px!important;right:10px!important;bottom:calc(9px + env(safe-area-inset-bottom))!important;top:auto!important;width:auto!important;height:74px!important;padding:7px!important;border-radius:26px!important;background:rgba(245,248,250,.52)!important;border:1px solid rgba(255,255,255,.76)!important;box-shadow:0 18px 50px rgba(20,30,35,.20),inset 0 1px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(255,255,255,.28)!important;backdrop-filter:blur(28px) saturate(170%);-webkit-backdrop-filter:blur(28px) saturate(170%);}
+  .sidebar::after{content:"";position:absolute;left:8%;right:8%;top:2px;height:22px;border-radius:999px;background:linear-gradient(90deg,rgba(255,255,255,.45),rgba(255,255,255,0));filter:blur(7px);pointer-events:none}
+  .dark .sidebar{background:rgba(19,27,31,.64)!important;border-color:rgba(255,255,255,.13)!important;box-shadow:0 20px 55px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.13),inset 0 -1px 0 rgba(255,255,255,.03)!important}
+  .sidebar nav{position:relative;z-index:2;height:100%!important;display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:4px!important;align-items:stretch!important}
+  .sidebar nav a{height:58px!important;min-width:0!important;padding:5px 3px!important;border-radius:19px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:3px!important;font-size:12px!important;border:1px solid transparent!important;transform:none!important}
+  .sidebar nav a::before{inset:1px;border-radius:18px;background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.10)}
+  .sidebar nav a::after{inset:1px;border-radius:18px}
+  .sidebar nav a.active::before,.sidebar nav a.active::after{opacity:1}
+  .sidebar nav a.active{color:#172126!important;border-color:rgba(255,255,255,.46)!important}
+  .dark .sidebar nav a.active{color:#f5f8fa!important;border-color:rgba(255,255,255,.10)!important}
+  .nav-icon{width:21px;height:21px;flex-basis:21px;stroke-width:1.9}
+  .sidebar nav a span{display:block!important;max-width:100%;overflow:hidden;text-overflow:ellipsis;font-size:8px!important;line-height:1.1;white-space:nowrap;font-weight:700;color:inherit}
+  .sidebar nav a span::after{content:none!important}
+  .custom-select-menu{border-radius:20px!important}
+  .custom-select-option{padding:11px 13px!important;border-radius:13px!important}
+}
