@@ -4,6 +4,8 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>BasisPath — Basis Path Testing Lab</title>
 <meta name="description" content="Interactive Control Flow Graph, McCabe Cyclomatic Complexity and Basis Path Testing case study.">
+<meta name="theme-color" content="#0d1316">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23141c20'/%3E%3Crect x='17' y='26' width='6' height='16' rx='3' fill='%23ff5a36'/%3E%3Crect x='29' y='18' width='6' height='28' rx='3' fill='%23ff5a36'/%3E%3Crect x='41' y='23' width='6' height='21' rx='3' fill='%23ff5a36'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
@@ -17,7 +19,7 @@
   <div class="side-bottom"><div class="engine"><span class="status-dot"></span><div><b>Analysis engine</b><small>Ready · client-side</small></div></div><button id="theme" class="side-btn" aria-label="Toggle color theme">◐ <span id="themeLabel">Dark mode</span></button></div>
 </aside>
 <main>
-<header class="topbar"><div class="mobile-brand">BasisPath</div><div class="crumb">SOFTWARE ENGINEERING <span>/</span> BASIS PATH TESTING</div><div class="top-actions"><button id="reset" class="icon-btn" title="Reset">↻</button><button id="export" class="outline">Export report</button></div></header>
+<header class="topbar"><button id="mobileMenu" class="mobile-menu" aria-label="Open navigation" aria-expanded="false">☰</button><div class="mobile-brand"><span class="mobile-brand-logo"><i></i><i></i><i></i></span><span>BasisPath</span></div><div class="crumb">SOFTWARE ENGINEERING <span>/</span> BASIS PATH TESTING</div><div class="top-actions"><button id="reset" class="icon-btn" title="Reset">↻</button><button id="export" class="outline">Export report</button></div></header>
 
 <section id="dashboard" class="hero wrap">
  <div><div class="eyebrow">INTERACTIVE CASE STUDY</div><h1>See how your program <em>really flows.</em></h1><p>Explore a working example, calculate McCabe's Cyclomatic Complexity, discover independent execution paths and run the minimum basis-path test set.</p></div>
