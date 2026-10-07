@@ -19,6 +19,50 @@ const scenarios={
 ]}
 };
 let current='atm', selectedPath=0, runTimer;
+
+// Replace native browser dropdown popups with theme-aware controls.
+// The original <select> remains in the DOM for accessibility and as the source of truth.
+function setupCustomSelect(select, onChange){
+  if(!select || select.dataset.customReady) return select?select.parentElement.querySelector('.custom-select'):null;
+  const wrap=document.createElement('div');
+  wrap.className='custom-select';
+  const trigger=document.createElement('button');
+  trigger.type='button'; trigger.className='custom-select-trigger';
+  trigger.setAttribute('aria-haspopup','listbox'); trigger.setAttribute('aria-expanded','false');
+  const label=document.createElement('span'); label.className='custom-select-label';
+  const chev=document.createElement('span'); chev.className='custom-select-chevron'; chev.textContent='⌄';
+  trigger.append(label,chev);
+  const menu=document.createElement('div'); menu.className='custom-select-menu'; menu.setAttribute('role','listbox');
+  const parent=select.parentNode; parent.insertBefore(wrap,select); wrap.append(trigger,select,menu);
+  select.classList.add('native-select'); select.dataset.customReady='1';
+  const close=()=>{wrap.classList.remove('open');trigger.setAttribute('aria-expanded','false')};
+  const refresh=()=>{
+    label.textContent=select.options[select.selectedIndex]?.text || '';
+    menu.innerHTML='';
+    [...select.options].forEach((opt,i)=>{
+      const item=document.createElement('button'); item.type='button'; item.className='custom-select-option'; item.textContent=opt.text;
+      item.setAttribute('role','option'); item.setAttribute('aria-selected',i===select.selectedIndex?'true':'false');
+      if(i===select.selectedIndex)item.classList.add('selected');
+      item.onclick=()=>{select.value=opt.value;select.dispatchEvent(new Event('change',{bubbles:true}));close();refresh()};
+      menu.appendChild(item);
+    });
+  };
+  trigger.onclick=()=>{const open=!wrap.classList.contains('open');document.querySelectorAll('.custom-select.open').forEach(x=>x.classList.remove('open'));wrap.classList.toggle('open',open);trigger.setAttribute('aria-expanded',String(open))};
+  select.addEventListener('change',refresh);
+  document.addEventListener('click',e=>{if(!wrap.contains(e.target))close()});
+  refresh();
+  if(onChange) select.addEventListener('change',onChange);
+  return wrap;
+}
+function refreshCustomSelect(select){
+  if(!select)return;
+  const wrap=select.parentElement?.classList.contains('custom-select')?select.parentElement:null;
+  if(!wrap)return;
+  const trigger=wrap.querySelector('.custom-select-trigger'), label=wrap.querySelector('.custom-select-label'), menu=wrap.querySelector('.custom-select-menu');
+  if(label)label.textContent=select.options[select.selectedIndex]?.text||'';
+  if(menu) [...menu.children].forEach((item,i)=>{item.classList.toggle('selected',i===select.selectedIndex);item.setAttribute('aria-selected',i===select.selectedIndex?'true':'false')});
+}
+
 function complexity(s){return s.edges.length-s.nodes.length+2}
 function render(){const s=scenarios[current]; $('#caseTitle').textContent=s.title;$('#caseDesc').textContent=s.desc;$('#code').textContent=s.code.map((x,i)=>String(i+1).padStart(2,'0')+'  '+x).join('\n');$('#gutter').textContent=s.code.map((_,i)=>i+1).join('\n');
  const N=s.nodes.length,E=s.edges.length,V=complexity(s);$('#complexity').textContent=V;$('#nodes').textContent=N;$('#edges').textContent=E;$('#decisions').textContent=V-1;$('#basis').textContent=V;$('#formula').textContent=`${E} − ${N} + 2 = ${V}`;$('#complexityHint').textContent=V<=3?'Low test effort':V<=6?'Moderate test effort':'High test effort';$('#pathCount').textContent=`${s.paths.length} paths`;
@@ -30,16 +74,18 @@ function renderGraph(s){const svg=$('#graphSvg');svg.innerHTML='';const W=900,H=
  const edgeG=document.createElementNS('http://www.w3.org/2000/svg','g');edgeG.classList.add('edges');s.edges.forEach(([a,b],i)=>{const p1=positions[a],p2=positions[b];let path=document.createElementNS('http://www.w3.org/2000/svg','path');let d;if(a===b||Math.abs(p1.y-p2.y)<20){d=`M ${p1.x} ${p1.y+24} C ${p1.x+80} ${p1.y+85} ${p2.x-80} ${p2.y-85} ${p2.x} ${p2.y-24}`}else d=`M ${p1.x} ${p1.y+24} C ${p1.x} ${p1.y+55} ${p2.x} ${p2.y-55} ${p2.x} ${p2.y-24}`;path.setAttribute('d',d);path.dataset.edge=i;path.setAttribute('marker-end','url(#arrow)');edgeG.appendChild(path)});svg.appendChild(edgeG);
  const nodeG=document.createElementNS('http://www.w3.org/2000/svg','g');s.nodes.forEach(n=>{const p=positions[n[0]],g=document.createElementNS('http://www.w3.org/2000/svg','g');g.classList.add('g-node',n[2]);g.dataset.id=n[0];const r=document.createElementNS('http://www.w3.org/2000/svg','rect');r.setAttribute('x',p.x-75);r.setAttribute('y',p.y-24);r.setAttribute('width',150);r.setAttribute('height',48);r.setAttribute('rx',14);const t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('x',p.x);t.setAttribute('y',p.y+5);t.textContent=n[1];g.append(r,t);g.onclick=()=>{const idx=s.nodes.findIndex(x=>x[0]===n[0]);toast(`Node ${idx+1}: ${n[1]}`)};nodeG.appendChild(g)});svg.appendChild(nodeG);}
 function renderPaths(s){$('#pathsList').innerHTML=s.paths.map((p,i)=>`<button class="path-row ${i===selectedPath?'selected':''}" data-i="${i}"><span class="path-num">${p.id}</span><span class="path-main"><b>${p.name}</b><small>${p.route.join(' → ')}</small></span><span class="path-arrow">›</span></button>`).join('');document.querySelectorAll('.path-row').forEach(b=>b.onclick=()=>{selectedPath=+b.dataset.i;renderPaths(s);highlightPath(s,s.paths[selectedPath]);$('#testSelect').value=selectedPath});}
-function renderTests(s){$('#testSelect').innerHTML=s.paths.map((p,i)=>`<option value="${i}">${p.id} · ${p.name}</option>`).join('');$('#testSelect').value=selectedPath}
+function renderTests(s){$('#testSelect').innerHTML=s.paths.map((p,i)=>`<option value="${i}">${p.id} · ${p.name}</option>`).join('');$('#testSelect').value=selectedPath;refreshCustomSelect($('#testSelect'))}
 function highlightPath(s,p){document.querySelectorAll('.g-node').forEach(n=>n.classList.remove('path-active'));document.querySelectorAll('#graphSvg .edges path').forEach(e=>e.classList.remove('path-active'));p.route.forEach(id=>document.querySelector(`.g-node[data-id="${CSS.escape(id)}"]`)?.classList.add('path-active'));for(let i=0;i<p.route.length-1;i++){const a=p.route[i],b=p.route[i+1];const edgeIndex=s.edges.findIndex(e=>e[0]===a&&e[1]===b);if(edgeIndex>=0)document.querySelector(`#graphSvg .edges path[data-edge="${edgeIndex}"]`)?.classList.add('path-active')}}
 function runTest(){const s=scenarios[current],p=s.paths[+$('#testSelect').value];selectedPath=+$('#testSelect').value;renderPaths(s);highlightPath(s,p);clearInterval(runTimer);$('#runnerStatus').textContent='● RUNNING';let step=0;const result=$('#runResult');result.innerHTML=`<div class="run-head"><div><b>${p.id} · ${p.name}</b><small>${p.input}</small></div><span class="running">EXECUTING</span></div><div class="progress"><i id="progressBar"></i></div><div id="trace" class="trace"></div>`;const trace=$('#trace');const tick=()=>{if(step>=p.route.length){clearInterval(runTimer);$('#runnerStatus').textContent='● PASSED';const done=document.createElement('div');done.className='pass-box';done.innerHTML=`<b>✓ Test passed</b><span>${p.expected}</span></div>`;trace.appendChild(done);toast(`${p.id} completed`);return}const id=p.route[step],node=s.nodes.find(n=>n[0]===id);const line=document.createElement('div');line.className='trace-line';line.innerHTML=`<span>${String(step+1).padStart(2,'0')}</span><b>${node[1]}</b><em>${node[2]==='decision'?'DECISION':node[2]==='loop'?'LOOP':'STEP'}</em>`;trace.appendChild(line);$('#progressBar').style.width=((step+1)/p.route.length*100)+'%';step++};tick();runTimer=setInterval(tick,420)}
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1900)}
-$('#scenario').onchange=()=>{current=$('#scenario').value;selectedPath=0;render()};$('#analyze').onclick=()=>{render();toast('Analysis recalculated')};$('#testSelect').onchange=()=>{selectedPath=+$('#testSelect').value;highlightPath(scenarios[current],scenarios[current].paths[selectedPath]);renderPaths(scenarios[current])};$('#runTest').onclick=runTest;$('#reset').onclick=()=>{current='atm';$('#scenario').value='atm';selectedPath=0;render();toast('Workspace reset')};
+$('#scenario').onchange=()=>{current=$('#scenario').value;selectedPath=0;render()};$('#analyze').onclick=()=>{render();toast('Analysis recalculated')};$('#testSelect').onchange=()=>{selectedPath=+$('#testSelect').value;highlightPath(scenarios[current],scenarios[current].paths[selectedPath]);renderPaths(scenarios[current]);refreshCustomSelect($('#testSelect'))};$('#runTest').onclick=runTest;$('#reset').onclick=()=>{current='atm';$('#scenario').value='atm';refreshCustomSelect($('#scenario'));selectedPath=0;render();toast('Workspace reset')};
 $('#export').onclick=()=>{const s=scenarios[current],V=complexity(s);const report=`BASISPATH ANALYSIS REPORT\n==========================\nCase: ${s.title}\n\nNodes: ${s.nodes.length}\nEdges: ${s.edges.length}\nDecision points: ${V-1}\nCyclomatic complexity: ${V}\nFormula: E - N + 2 = ${s.edges.length} - ${s.nodes.length} + 2 = ${V}\nMinimum basis paths: ${s.paths.length}\n\nINDEPENDENT PATHS\n${s.paths.map(p=>`${p.id}: ${p.name}\nRoute: ${p.route.join(' -> ')}\nInput: ${p.input}\nExpected: ${p.expected}`).join('\n\n')}`;const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([report],{type:'text/plain'}));a.download='basispath-report.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500);toast('Report exported')};
 function syncThemeLabel(){const dark=document.body.classList.contains('dark');const label=$('#themeLabel');if(label)label.textContent=dark?'Light mode':'Dark mode';$('#theme')?.setAttribute('aria-label',dark?'Switch to light mode':'Switch to dark mode')}
 $('#theme').onclick=()=>{document.body.classList.toggle('dark');localStorage.setItem('bp-dark',document.body.classList.contains('dark'));syncThemeLabel()};if(localStorage.getItem('bp-dark')==='true')document.body.classList.add('dark');syncThemeLabel();
 $('#showFormula').onclick=()=>$('#modal').classList.add('show');$('#closeModal').onclick=$('#closeModal2').onclick=()=>$('#modal').classList.remove('show');$('#modal').onclick=e=>{if(e.target.id==='modal')e.currentTarget.classList.remove('show')};
 render();
+setupCustomSelect($('#scenario'));
+setupCustomSelect($('#testSelect'));
 
 // ===== Navigation scroll spy =====
 (function setupSectionNavigation(){
