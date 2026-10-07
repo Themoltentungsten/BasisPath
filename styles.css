@@ -125,3 +125,21 @@
   .test-picker label{grid-column:1}
   .test-picker .primary{width:100%}
 }
+
+/* ===== Final visual polish ===== */
+.panel-head{align-items:center}
+.count-pill{display:inline-flex;align-items:center;justify-content:center;height:30px;min-width:72px;width:auto;padding:0 12px;border-radius:999px;flex:0 0 auto;line-height:1}
+.path-main{padding-top:1px}
+.path-main b,.path-main small{line-height:1.35}
+.path-row{min-height:68px}
+.test-picker{align-items:end}
+.test-picker select,.test-picker .primary{height:40px}
+.test-picker label{align-self:end}
+.dark .count-pill{background:#182126;color:#c4cdd2;border-color:#3a474e}
+.dark .path-row.selected{background:#2a201d}
+.dark .path-row.selected .path-main b{color:#f3f6f7}
+.dark .path-row.selected .path-main small{color:#aeb9bf}
+@media(max-width:650px){
+  .panel-head{align-items:flex-start}
+  .count-pill{height:28px;min-width:68px}
+}
